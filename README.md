@@ -66,7 +66,7 @@ Start the server:
 npm start
 ```
 
-The API will be available at `https://hermaig-referral-api.onrender.com/api`.
+The API will be available at `https://hermaig-referral-api.onrender.com/api`[https://hermaig-referral-api.onrender.com].
 
 ## API Endpoints
 
