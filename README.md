@@ -3,7 +3,8 @@
 This is a RESTful API built with Node.js, Express, and MongoDB for managing user registrations, referrals, and rewards in a referral system. 
 
 ## Demo Link
-You can try out the deployed API here: [Live API Demo](https://hermaig-referral-api.onrender.com)
+You can try out the deployed API here: [Live API Demo](https://hermaig-referral-api.onrender.com).
+Please use Postman to interact with the API endpoints.
 
 
 
