@@ -5,59 +5,59 @@ import { createReferralCode } from "../util/createReferralCode.mjs";
 import User from "../models/user.model.mjs";
 import ReferralCode from "../models/referral.model.mjs";
 
-// export async function signupUser(req, res, next) {
-//   const errors = validationResult(req);
-//   try {
-//     if (!errors.isEmpty()) {
-//       const error = new Error("Validation failed.");
-//       error.statusCode = 422;
-//       error.data = errors.array();
-//       throw error;
-//     }
 
-//     let referredByUser = null;
-//     if (req.body.referredByCode) {
-//       referredByUser = await User.findOne({
-//         referralCode: req.body.referredByCode,
-//       });
-//       if (!referredByUser) {
-//         const error = new Error("Referral code is invalid.");
-//         error.statusCode = 400;
-//         throw error;
-//       }
-//     }
 
-//     const userAlreadyExists = await User.findOne({ email: req.body.email });
-//     if (userAlreadyExists) {
-//       const error = new Error("A user with this email already exists.");
-//       error.statusCode = 403;
-//       throw error;
-//     }
 
-//     const hashedPw = await bcrypt.hash(req.body.password, 12);
-//     const newUser = new User({
-//       name: req.body.name,
-//       email: req.body.email,
-//       phoneNumber: req.body.phoneNumber,
-//       password: hashedPw,
-//       referralCode: createReferralCode(),
-//       referredBy: referredByUser ? referredByUser.referralCode : null,
-//       rewardPoints: 0,
-//     });
 
-//     const savedUser = await newUser.save();
 
-//     if (referredByUser) {
-//       referralCode.usedBy.push(savedUser._id);
-//       referredByUser.rewardPoints += 10;
-//       await referredByUser.save();
-//     }
 
-//     res.status(201).json({ message: "User created!", userId: savedUser._id });
-//   } catch (err) {
-//     next(err);
-//   }
-// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export async function signupUser(req, res, next) {
   const errors = validationResult(req);

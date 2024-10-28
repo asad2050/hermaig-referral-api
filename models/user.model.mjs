@@ -4,10 +4,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phoneNumber:{type:String, required: true, unique: true},
   password: { type: String, required: true },
-  referralCode: { type: String},  // User's unique referral code
-  referredBy: { type: String }, // Stores the code used to sign up
+  referralCode: { type: String},  
+  referredBy: { type: String }, 
   rewardPoints: { type: Number, default: 0 },
-  isAdmin:{type:Boolean, default: false},  // Points earned from referrals
+  isAdmin:{type:Boolean, default: false},  
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);

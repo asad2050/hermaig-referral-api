@@ -1,6 +1,6 @@
 import ReferralPolicy from "../models/referralPolicy.model.mjs";
 import ReferralCode from "../models/referral.model.mjs";
-// import Reward from "../models/reward.model.mjs";
+
 import User from "../models/user.model.mjs";
 import { DateTime } from "luxon";
 
@@ -188,30 +188,30 @@ export const getUserReferrals = async (req, res, next) => {
     next(error);
   }
 };
-// export const getUserRewards = async (req, res, next) => {
-//   const userId = req.params.userId;
 
-//   try {
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       const error = new Error("No user found");
-//       error.statusCode = 404;
-//       throw error;
-//     }
-//     const rewards = await ReferralCode.find({ generatedBy: userId }).populate(
-//       "generatedBy",
-//       "name email"
-//     );
-//     if (!rewards) {
-//       const error = new Error("Could not fetch rewards");
-//       error.statusCode = 500;
-//       throw error;
-//     }
-//     if (rewards.length === 0) {
-//       return res.status(200).json({ message: "No rewards found" });
-//     }
-//     res.status(200).json({rewards});
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
