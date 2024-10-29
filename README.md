@@ -1,5 +1,7 @@
-# Hermaig Referral API
+### Project Information
+This project is part of an assessment for a Web Developer Internship at Hermaig Jewelers.
 
+# Hermaig Referral API
 This is a RESTful API built with Node.js, Express, and MongoDB for managing user registrations, referrals, and rewards in a referral system. 
 
 ## Demo Link
