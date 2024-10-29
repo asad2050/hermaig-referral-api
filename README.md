@@ -38,7 +38,7 @@ Please use Postman to interact with the API endpoints.
   - [Middleware](#middleware)
   - [Error Handling](#error-handling)
   - [Environment Variables](#environment-variables)
-  - [License](#license)
+
 
 ## Installation
 
@@ -447,8 +447,4 @@ MONGODB_URL=<your_mongodb_connection_string>
 PORT=<your_port_number> (default: 3000)
 JWT_SECRET_KEY<your_jwt_secret>
 ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
