@@ -3,34 +3,36 @@ import mongoose from "mongoose";
 export const loginValidator = [
   body("email", "Invalid: should not be empty").trim().escape().not().isEmpty(),
   body("email", "Invalid email").trim().escape().isEmail(),
-  body("password", "The minimum password length is 6 characters")
-    .trim()
-    .escape()
-    .isLength({ min: 6 }),
+  // body("password", "The minimum password length is 6 characters")
+  //   .trim()
+  //   .escape()
+  //   .isLength({ min: 6 }),
 ];
 
 export const signupValidator = [
   body("email", "Invalid: should not be empty").trim().escape().not().isEmpty(),
   body("email", "Invalid email").trim().escape().isEmail(),
-  body("password", "Password should not be empty")
-    .trim()
-    .escape()
-    .not()
-    .isEmpty(),
-  body("password", "The minimum password length is 6 characters")
-    .trim()
-    .escape()
-    .isLength({ min: 6 }),
+  // body("password", "Password should not be empty")
+  //   .trim()
+  //   .escape()
+  //   .not()
+  //   .isEmpty(),
+  // body("password", "The minimum password length is 6 characters")
+  //   .trim()
+  //   .escape()
+  //   .isLength({ min: 6 }),
+  body("password", "The minimum password length is 6 characters").custom((value) => {
+    return value.trim().length >= 6;
+  }),
   body("name", "The name should not be empty").trim().escape().not().isEmpty(),
-  body("phoneNumber", "Mobile number must be 10 digits long")
-    .trim()
-    .escape()
-    .isLength({ min: 10, max: 10 }),
-  body("phoneNumber", "Mobile number must not be empty")
-    .trim()
-    .escape()
-    .not()
-    .isEmpty(),
+  body('phoneNumber', "Mobile number is invalid").custom((value)=>{
+    if(value.trim().length === 0){
+      return true
+  } if(value.trim().length === 10){
+    return true
+  }
+  return false
+  }),
 ];
 
 export const createPolicyValidator = [
@@ -49,6 +51,13 @@ export const codeValidator = [
   check("code", "The code cannot be empty").trim().escape().not().isEmpty(),
 ];
 
+export const userInteractionsValidator = [
+  body("interactionType", "The interaction type cannot be empty").trim().escape().not().isEmpty(),
+  body("interactionType", "The interaction type should be either 'signup' or 'login'").trim().escape().isIn(["signup", 'linkClick',"pageVisit"]),
+  body("interactionDetails", "The interaction details cannot be empty").isArray(),
+  body("interactionDetails.*.url", "The url cannot be empty").trim().escape().not().isEmpty(),
+  body("interactionDetails.*.timestamp", "The timestamp cannot be empty").trim().escape().not().isEmpty(),  
+]
 export const policyDetailsValidator = [
   check("pId", "Invalid object Id pId").custom((value) => {
     return mongoose.isValidObjectId(value);

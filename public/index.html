@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Referral System Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .form { margin-bottom: 20px; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; }
+    .button { margin: 5px 0; width: 100%; cursor: pointer; }
+    .hidden { display: none; }
+    .referral-list { list-style: none; padding: 0; }
+    .referral-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+    #checkResult { margin-top: 20px; }
+    .interaction-item { margin-left: 20px; }
+  </style>
+</head>
+<body>
+
+<h2>Referral System</h2>
+
+<div id="auth-section">
+  <h3>Login</h3>
+  <div class="form">
+    <label>Email:</label>
+    <input type="email" id="loginEmail" required>
+    <label>Password:</label>
+    <input type="password" id="loginPassword" required>
+    <button onclick="login()">Login</button>
+  </div>
+  
+  <h3>Signup</h3>
+  <div class="form">
+    <label>Name:</label>
+    <input type="text" id="signupName" required>
+    <label>Email:</label>
+    <input type="email" id="signupEmail" required>
+    <label>Password:</label>
+    <input type="password" id="signupPassword" required>
+    <label>Phone Number:</label>
+    <input type="text" id="phoneNumber" required>
+    <label>Referral Code:</label>
+    <input type="text" id="referralCode" placeholder="Optional">
+    <button onclick="signup()">Signup</button>
+  </div>
+</div>
+
+<button class="button" onclick="generateReferralCode()">Generate Referral Code</button>
+
+<!-- Check Referral Code Section -->
+<div>
+  <h3>Check Referral Code</h3>
+  <input type="text" id="checkReferralCodeInput" placeholder="Enter referral code" required>
+  <button class="button" onclick="checkReferralCode()">Check</button>
+  <div id="checkResult"></div>
+</div>
+
+<div>Generated Code: <span id="generatedCode"></span></div>
+<div id="request-section" class="hidden">
+  <h3>Make API Requests</h3>
+  <div id="admin-actions" class="hidden">
+    <button class="button" onclick="ge()">Get All Referrals</button>
+  </div>
+  <button class="button" onclick="logout()">Logout</button>
+  
+  <!-- Referral list for normal users -->
+  <div id="user-referralList" class="hidden">
+    <h3>Your Referrals</h3>
+    <button class="button" onclick="getUserReferrals()">Get All Referrals</button>
+    <ul class="referral-list" id="user-referral-list"></ul>
+  </div>
+  
+  <!-- Referral list for admins -->
+  <div id="referralList" class="hidden">
+    <h3>All Referrals</h3>
+    <ul class="referral-list" id="referral-list"></ul>
+  </div>
+  
+  <!-- Referral details section -->
+  <div id="referralDetails" class="hidden">
+    <h3>Referral Details</h3>
+    <pre id="referral-details-data"></pre>
+  </div>
+</div>
+
+<script>
+  const baseUrl = 'http://localhost:3000/api';
+
+  function checkToken() {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('userRole');
+    if (token) {
+      document.getElementById('auth-section').style.display = 'none';
+      document.getElementById('request-section').style.display = 'block';
+      if (role === 'admin') {
+        document.getElementById('admin-actions').style.display = 'block';
+      } else {
+        document.getElementById('user-referralList').style.display = 'block'; // Show user referral list for normal users
+        getUserReferrals(); // Fetch user's referrals
+      }
+    }
+  }
+
+  function saveToken(token, role) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('userRole', role);
+    checkToken();
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    document.getElementById('auth-section').style.display = 'block';
+    document.getElementById('request-section').style.display = 'none';
+    document.getElementById('responseData').textContent = '';
+  }
+
+  async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const response = await fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+    if (response.ok) saveToken(data.token, data.role);
+  }
+
+  async function signup() {
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const phoneNumber = document.getElementById('phoneNumber').value;
+    const referralCode = document.getElementById('referralCode').value;
+
+    const response = await fetch(`${baseUrl}/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, phoneNumber, referredByCode: referralCode })
+    });
+    const data = await response.json();
+    // Optionally handle response data (e.g., show a message)
+  }
+
+  function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  }
+
+  async function getReferrals() {
+    const response = await fetch(`${baseUrl}/admin/referrals`, { headers: getAuthHeaders() });
+    const data = await response.json();
+    const referralList = document.getElementById('referral-list');
+    referralList.innerHTML = '';
+    console.log(data)
+
+      const listItem = document.createElement('li');
+      listItem.classList.add('referral-item');
+      listItem.innerHTML = `
+        <strong>Referral Code:</strong> ${data.referral.code} <br>
+        <strong>Generated By:</strong> ${data.referral.generatedBy.name} <br>
+        <strong>Status:</strong> ${data.referral.status} <br>
+        <strong>Usage Count:</strong> ${data.referral.usageCount} <br>
+        <strong>Created At:</strong> ${data.referral.createdAt} <br>
+        <strong>Updated At:</strong> ${data.referral.updatedAt} <br>
+        <button onclick="getReferralDetails('${data.referral._id}')">View Details</button>
+      `;
+      referralList.appendChild(listItem);
+
+    document.getElementById('referralList').style.display = 'block';
+  }
+
+  async function getUserReferrals() {
+    const response = await fetch(`${baseUrl}/referral`, { headers: getAuthHeaders() });
+    const data = await response.json();
+    const userReferralList = document.getElementById('user-referral-list');
+    userReferralList.innerHTML = '';
+
+
+      const listItem = document.createElement('li');
+      listItem.classList.add('referral-item');
+      listItem.innerHTML = `
+        <strong>Referral Code:</strong> ${data.referral.code} <br>
+        <strong>Status:</strong> ${data.referral.status} <br>
+        <strong>Usage Count:</strong> ${data.referral.usageCount} <br>
+        <strong>Created At:</strong> ${data.referral.createdAt} <br>
+        <button onclick="getReferralDetails('${data.referral._id}')">View Details</button>
+      `;
+      userReferralList.appendChild(listItem);
+    
+    document.getElementById('user-referralList').style.display = 'block';
+  }
+
+  async function getReferralDetails(referralId) {
+    const response = await fetch(`${baseUrl}/admin/referrals/${referralId}`, { headers: getAuthHeaders() });
+    const data = await response.json();
+    
+    if (data.referral) {
+      const referral = data.referral;
+      let referralHtml = `
+        <h4>Referral Code: ${referral.code}</h4>
+        <p><strong>Generated By:</strong> ${referral.generatedBy.name} (${referral.generatedBy.email})</p>
+        <p><strong>Status:</strong> ${referral.status}</p>
+        <p><strong>Usage Count:</strong> ${referral.usageCount}</p>
+        <p><strong>Created At:</strong> ${new Date(referral.createdAt).toLocaleString()}</p>
+        <p><strong>Updated At:</strong> ${new Date(referral.updatedAt).toLocaleString()}</p>
+        <h5>User Interactions:</h5>
+        <ul>
+      `;
+
+      referral.userInterations.forEach(interaction => {
+        referralHtml += `
+          <li>
+            <strong>User:</strong> ${interaction.userId.name} (${interaction.userId.email}) <br>
+            <strong>Interaction Type:</strong> ${interaction.interactionType} <br>
+            <strong>Referral Code:</strong> ${interaction.referralCode} <br>
+            <strong>Interactions:</strong>
+            <ul>
+        `;
+
+        interaction.interactionDetails.forEach(detail => {
+          referralHtml += `
+            <li class="interaction-item">
+              <strong>URL:</strong> <a href="${detail.url}" target="_blank">${detail.url}</a> <br>
+              <strong>Timestamp:</strong> ${new Date(detail.timestamp).toLocaleString()} <br>
+              <strong>IST Timestamp:</strong> ${new Date(detail.ISTTimestamp).toLocaleString()}
+            </li>
+          `;
+        });
+
+        referralHtml += `
+            </ul>
+          </li>
+        `;
+      });
+
+      referralHtml += '</ul>';
+      document.getElementById('referral-details-data').innerHTML = referralHtml;
+    }
+
+    document.getElementById('referralDetails').style.display = 'block';
+  }
+
+  async function generateReferralCode() {
+    const response = await fetch(`${baseUrl}/referral/generate`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+    const data = await response.json();
+    if (data.code) {
+      document.getElementById('generatedCode').textContent = data.code;
+    }
+  }
+
+  async function checkReferralCode() {
+    const code = document.getElementById('checkReferralCodeInput').value;
+    const response = await fetch(`${baseUrl}/referral/check/${code}`);
+    const data = await response.json();
+    document.getElementById('checkResult').textContent = data.message || 'Code not found.';
+  }
+
+  checkToken();
+</script>
+
+</body>
+</html>

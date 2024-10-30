@@ -1,6 +1,6 @@
 import ReferralPolicy from "../models/referralPolicy.model.mjs";
 import ReferralCode from "../models/referral.model.mjs";
-
+import UserInteraction from "../models/userInteraction.model.mjs";
 import User from "../models/user.model.mjs";
 import { DateTime } from "luxon";
 
@@ -125,10 +125,8 @@ export const getAllReferralsUnderThisPolicy = async (req, res, next) => {
 
 export const getAllReferrals = async (req, res, next) => {
   try {
-    const referrals = await ReferralCode.find().populate(
-      "generatedBy",
-      "name email"
-    );
+    const referrals = await ReferralCode.find().populate("generatedBy", "name email");
+
     if (!referrals) {
       const error = new Error("Could not fetch referrals");
       error.statusCode = 500;
@@ -137,8 +135,26 @@ export const getAllReferrals = async (req, res, next) => {
     if (referrals.length === 0) {
       return res.status(200).json({ message: "No referrals found" });
     }
+    const formattedReferrals = referrals.map((referral) => ({
+      _id: referral._id,
+      code: referral.code,
+      generatedBy: referral.generatedBy,
+      status: referral.status,
+      userInterations: referral.userInteractions,
+      totalUserInteractions: referral.userInteractions.length,
+      // policy: referral.policy,
+      // usedBy: referral.usedBy,
+      usageCount: referral.usageCount,
+      // expirationDateUTC: referral.expirationDate,
+      // expirationDateIST: DateTime.fromISO(referral.expirationDate)
+      //   .setZone("Asia/Kolkata")
+      //   .toISO(),
+      createdAt: referral.createdAt,
+      updatedAt: referral.updatedAt,
+    }));
 
-    res.status(200).json({ referrals });
+
+    res.status(200).json({ referrals:formattedReferrals });
   } catch (error) {
     next(error);
   }
@@ -149,14 +165,28 @@ export const getReferralDetails = async (req, res, next) => {
   try {
     const referral = await ReferralCode.findById(referralId).populate(
       "generatedBy",
-      "name email"
+      "name email",
+      
     );
+
+    const userInteractions= await UserInteraction.find({ _id:referral.userInteractions}).populate('userId', 'name email');
+    const formattedReferral ={
+      _id: referral._id,
+      code: referral.code,
+      generatedBy: referral.generatedBy,
+      status: referral.status,
+      userInterations: userInteractions,
+      usageCount: referral.usageCount,
+      createdAt: referral.createdAt,
+      updatedAt: referral.updatedAt,
+    };
     if (!referral) {
       const error = new Error("Referral not found");
       error.statusCode = 404;
       throw error;
     }
-    res.status(200).json({ referral });
+
+    res.status(200).json({ referral: formattedReferral });
   } catch (error) {
     next(error);
   }
@@ -164,6 +194,7 @@ export const getReferralDetails = async (req, res, next) => {
 
 export const getUserReferrals = async (req, res, next) => {
   const userId = req.params.userId;
+  console.log(userId);
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -171,23 +202,34 @@ export const getUserReferrals = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    const referrals = await ReferralCode.find({ generatedBy: userId }).populate(
+    const referral = await ReferralCode.findOne({ generatedBy: userId,code:user.referralCode }).populate(
       "generatedBy",
       "name email"
     );
-    if (!referrals) {
+    
+    const userInteractions= await UserInteraction.find({ _id:referral.userInteractions}).populate('userId', 'name email');
+    if (!referral) {
       const error = new Error("Could not fetch referrals");
       error.statusCode = 500;
       throw error;
     }
-    if (referrals.length === 0) {
-      return res.status(200).json({ message: "No referrals found" });
-    }
-    res.status(200).json({ referrals });
+    const formattedReferral ={
+      _id: referral._id,
+      code: referral.code,
+      generatedBy: referral.generatedBy,
+      status: referral.status,
+      userInterations: userInteractions,
+      usageCount: referral.usageCount,
+      createdAt: referral.createdAt,
+      updatedAt: referral.updatedAt,
+    };
+  
+    res.status(200).json({referral:formattedReferral  });
   } catch (error) {
     next(error);
   }
 };
+
 
 
 

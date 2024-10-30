@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import {getUserRewards} from '../controllers/rewards.controller.mjs'; 
+import {storeUserInteractions} from '../controllers/user.controller.mjs'; 
+import { userInteractionsValidator } from '../util/validation.mjs';
 
 const router =Router();
 
-router.get('/rewards', getUserRewards);
-
+router.post('/interactions',storeUserInteractions)
 
 
 export default router

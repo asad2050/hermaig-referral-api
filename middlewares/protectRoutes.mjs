@@ -11,6 +11,11 @@ function protectRoutes(req,res,next){
        error.statuCode = 403;
        throw error;
      }
+     if(req.baseUrl.startsWith('api/referral') && !req.role.includes('user')){
+      const error = new Error('Not authorized.');
+      error.statuCode = 403;
+      throw error;
+    }
     next();
     }
     

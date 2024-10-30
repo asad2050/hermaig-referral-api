@@ -1,4 +1,4 @@
-export function createReferralCode() {
-    return 'HARMAIG-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+export function createReferralCode(userName) {
+    return 'HARMAIG-'+userName+"-"+ Math.random().toString(36).substring(2, 4).toUpperCase();
   }
   

@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
-import { createReferralCode } from "../util/createReferralCode.mjs";
+// import { createReferralCode } from "../util/createReferralCode.mjs";
 import User from "../models/user.model.mjs";
+import userInteraction from "../models/userInteraction.model.mjs";
 import ReferralCode from "../models/referral.model.mjs";
 
 
@@ -85,9 +86,10 @@ export async function signupUser(req, res, next) {
       }
     }
   
-    const userAlreadyExists = await User.findOne({ email: req.body.email });
+    const userAlreadyExists = await User.findOne({ email: req.body.email,
+    phoneNumber: req.body.phoneNumber });
     if (userAlreadyExists) {
-      const error = new Error("A user with this email already exists.");
+      const error = new Error("A user with this email and phone number already exists.");
       error.statusCode = 403;
       throw error;
     }
@@ -104,10 +106,17 @@ export async function signupUser(req, res, next) {
 
 
     const savedUser = await newUser.save();
-    console.log(referralCode)
 
+    // console.log(referralCode)
+    const userInteraction= new userInteraction({
+      userId: savedUser._id,
+      interactionType: "signup",
+      referralCode: referredByUser ? referredByUser.referralCode : null,
+    })
     if (referralCode) {
+     const responseUserInterationSave= await userInteraction.save();
       referralCode.usedBy.push(savedUser._id);
+      referralCode.userInteractions.push(responseUserInterationSave._id);
       referralCode.usageCount += 1;
       await referralCode.save();
       referredByUser.rewardPoints += 10;
@@ -122,17 +131,17 @@ export async function signupUser(req, res, next) {
 
 export async function loginUser(req, res, next) {
   const errors = validationResult(req);
+  try {
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed.");
     error.statusCode = 422;
     error.data = errors.array();
     throw error;
   }
-
+  
   const email = req.body.email;
   const password = req.body.password;
 
-  try {
     const existingUser = await User.findOne({ email: email });
     if (!existingUser) {
       const error = new Error("A user with this email could not be found.");
@@ -155,6 +164,7 @@ export async function loginUser(req, res, next) {
         email: existingUser.email,
         userId: existingUser._id.toString(),
         isAdmin: existingUser.isAdmin,
+        role: existingUser.role
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "3h" }
@@ -163,6 +173,7 @@ export async function loginUser(req, res, next) {
     res.status(200).json({
       token: token,
       userId: existingUser._id.toString(),
+      role: existingUser.role,
       isAdmin: existingUser.isAdmin,
       expiresIn: 3600 * 3,
     });
