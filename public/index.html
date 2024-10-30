@@ -67,7 +67,7 @@
   <!-- Referral list for normal users -->
   <div id="user-referralList" class="hidden">
     <h3>Your Referrals</h3>
-    <button class="button" onclick="getUserReferrals()">Get All Referrals</button>
+    <button class="button" onclick="getUserReferrals()">Get Your Referrals</button>
     <ul class="referral-list" id="user-referral-list"></ul>
   </div>
   
@@ -114,6 +114,10 @@
     document.getElementById('auth-section').style.display = 'block';
     document.getElementById('request-section').style.display = 'none';
     document.getElementById('responseData').textContent = '';
+    document.getElementById('admin-actions').style.display = 'none';
+    document.getElementById('user-referralList').style.display = 'none';
+    document.getElementById('referralList').style.display = 'none';
+    document.getElementById('referralDetails').style.display = 'none';
   }
 
   async function login() {
