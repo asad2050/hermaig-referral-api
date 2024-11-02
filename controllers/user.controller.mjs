@@ -57,12 +57,20 @@ export const  storeUserInteractions=async(req,res,next)=>{
     });
 
     // Save interaction in the database
-    const savedInteraction = await newInteraction.save();
+    // const savedInteraction = await newInteraction.save();
+    const referral= await ReferralCode.findOne({ code: user.referredBy });
+    if(referral){
+      referral.usageCount = referral.usageCount + 1;
+      referral.userInteractions=[...referral.userInteractions,newInteraction];
+      console.log(referral)
+      await referral.save();
+    }
+ 
 
     // Respond with success message and saved data
     res.status(201).json({
       message: 'User interaction stored successfully.',
-      interaction: savedInteraction
+      interaction: newInteraction
     });
   } catch (error) {
     // Handle errors (e.g., database errors)

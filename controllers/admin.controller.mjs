@@ -126,7 +126,6 @@ export const getAllReferralsUnderThisPolicy = async (req, res, next) => {
 export const getAllReferrals = async (req, res, next) => {
   try {
     const referrals = await ReferralCode.find().populate("generatedBy", "name email");
-
     if (!referrals) {
       const error = new Error("Could not fetch referrals");
       error.statusCode = 500;
@@ -206,7 +205,7 @@ export const getUserReferrals = async (req, res, next) => {
       "generatedBy",
       "name email"
     );
-    
+  
     const userInteractions= await UserInteraction.find({ _id:referral.userInteractions}).populate('userId', 'name email');
     if (!referral) {
       const error = new Error("Could not fetch referrals");

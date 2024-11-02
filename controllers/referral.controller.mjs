@@ -8,7 +8,7 @@ import { DateTime } from "luxon";
 export const viewReferral = async (req, res, next) => {
   try {
     const referral = await ReferralCode.findOne({ generatedBy: req.userId }).populate("generatedBy", "name email");
-    const userInteractions = await userInteraction.find({ _id: referral.userInteractions}).populate('userId', 'name email');
+    const userInteractions = await userInteraction.find({ _id:referral.userInteractions}).populate('userId', 'name email');
   
 
     if (!referral ) {
@@ -40,7 +40,9 @@ export const viewReferral = async (req, res, next) => {
   }
 };
 
-export const generateReferralCode = async (req, res, next) => {
+export const generateReferralCode = async (req, res, next) => 
+  
+  {
   try {
     const userId = req.userId;
     const now = DateTime.now().toUTC().toISO();
@@ -58,7 +60,6 @@ export const generateReferralCode = async (req, res, next) => {
     //   throw error;
     // }
 
-    const referralCode = createReferralCode(user.name);
 
     // const expirationDate = DateTime.now()
     //   .plus({ days: policy.validityPeriod })
@@ -67,15 +68,28 @@ export const generateReferralCode = async (req, res, next) => {
     // const expirationIST = DateTime.fromISO(expirationDate)
     //   .setZone("Asia/Kolkata")
     //   .toISO();
-
-    const newReferralCode = new ReferralCode({
+    let finalReferral;
+      const existingReferral =await ReferralCode.findOne({ generatedBy: userId });
+    if (existingReferral) {
+    //   existingReferral.code = referralCode;
+    // finalReferral=  await existingReferral.save();
+      // console.log(existingReferral);
+    return res.status(201).json({ message:"Referral code already generated",referralCode: existingReferral.code });
+    }
+    
+    const referralCode = createReferralCode(user.name);
+    console.log(existingReferral);
+   
+  const newReferralCode = new ReferralCode({
       code: referralCode,
       generatedBy: userId,
       // policy: policy._id,
     });
 
     await newReferralCode.save();
-     user.referralCode = newReferralCode._id;
+    
+  
+     user.referralCode = newReferralCode.code;
    await  user.save();
 
     return res.status(201).json({ referralCode });

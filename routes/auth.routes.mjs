@@ -7,6 +7,8 @@ const router = express.Router();
 router.post("/signup", signupValidator, signupUser);
 
 router.post("/login", loginValidator, loginUser);
+// response token => authorization : Bearer +" "+ token
+
 
 
 export default router;

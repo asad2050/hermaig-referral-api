@@ -175,7 +175,7 @@ export async function loginUser(req, res, next) {
       userId: existingUser._id.toString(),
       role: existingUser.role,
       isAdmin: existingUser.isAdmin,
-      expiresIn: 3600 * 3,
+      expiresIn: 3600*3,
     });
   } catch (err) {
     next(err);

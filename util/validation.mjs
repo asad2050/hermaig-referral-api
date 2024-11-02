@@ -2,7 +2,7 @@ import { body, check } from "express-validator";
 import mongoose from "mongoose";
 export const loginValidator = [
   body("email", "Invalid: should not be empty").trim().escape().not().isEmpty(),
-  body("email", "Invalid email").trim().escape().isEmail(),
+  body("email", "Invalid email").isEmail(),
   // body("password", "The minimum password length is 6 characters")
   //   .trim()
   //   .escape()
@@ -11,7 +11,7 @@ export const loginValidator = [
 
 export const signupValidator = [
   body("email", "Invalid: should not be empty").trim().escape().not().isEmpty(),
-  body("email", "Invalid email").trim().escape().isEmail(),
+  body("email", "Invalid email").isEmail(),
   // body("password", "Password should not be empty")
   //   .trim()
   //   .escape()
