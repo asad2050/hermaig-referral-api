@@ -11,10 +11,14 @@ import referralRoutes from './routes/referral.routes.mjs';
 import adminRoutes from './routes/admin.routes.mjs'
 import path from 'path';
 import { fileURLToPath } from 'url';
+import passport from 'passport';
+import './util/passport.mjs'; // Ensure this is loaded
+
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(passport.initialize());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'public')));

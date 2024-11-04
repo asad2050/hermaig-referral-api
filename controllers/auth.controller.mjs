@@ -6,63 +6,9 @@ import User from "../models/user.model.mjs";
 import userInteraction from "../models/userInteraction.model.mjs";
 import ReferralCode from "../models/referral.model.mjs";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export async function signupUser(req, res, next) {
   const errors = validationResult(req);
-  
+
   try {
     if (!errors.isEmpty()) {
       const error = new Error("Validation failed.");
@@ -70,7 +16,7 @@ export async function signupUser(req, res, next) {
       error.data = errors.array();
       throw error;
     }
-    const errorData=[];
+    const errorData = [];
     let referredByUser = null;
     let referralCode = null;
     if (req.body.referredByCode) {
@@ -82,14 +28,18 @@ export async function signupUser(req, res, next) {
       }
       referredByUser = await User.findById(referralCode.generatedBy);
       if (!referredByUser) {
-       errorData.push("Referrer doesn't exist.");
+        errorData.push("Referrer doesn't exist.");
       }
     }
-  
-    const userAlreadyExists = await User.findOne({ email: req.body.email,
-    phoneNumber: req.body.phoneNumber });
+
+    const userAlreadyExists = await User.findOne({
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+    });
     if (userAlreadyExists) {
-      const error = new Error("A user with this email and phone number already exists.");
+      const error = new Error(
+        "A user with this email and phone number already exists."
+      );
       error.statusCode = 403;
       throw error;
     }
@@ -99,22 +49,22 @@ export async function signupUser(req, res, next) {
       name: req.body.name,
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
+      role: req.body.role,
       password: hashedPw,
       referredBy: referredByUser ? referredByUser.referralCode : null,
       rewardPoints: 0,
     });
 
-
     const savedUser = await newUser.save();
 
     // console.log(referralCode)
-    const userInteraction= new userInteraction({
+    const userInteraction = new userInteraction({
       userId: savedUser._id,
       interactionType: "signup",
       referralCode: referredByUser ? referredByUser.referralCode : null,
-    })
+    });
     if (referralCode) {
-     const responseUserInterationSave= await userInteraction.save();
+      const responseUserInterationSave = await userInteraction.save();
       referralCode.usedBy.push(savedUser._id);
       referralCode.userInteractions.push(responseUserInterationSave._id);
       referralCode.usageCount += 1;
@@ -123,7 +73,9 @@ export async function signupUser(req, res, next) {
       await referredByUser.save();
     }
     const responseError = errorData ?? errorData.length > 0 ? errorData : null;
-    res.status(201).json({ message: "User created!", userId: savedUser._id , responseError });
+    res
+      .status(201)
+      .json({ message: "User created!", userId: savedUser._id, responseError });
   } catch (err) {
     next(err);
   }
@@ -132,15 +84,15 @@ export async function signupUser(req, res, next) {
 export async function loginUser(req, res, next) {
   const errors = validationResult(req);
   try {
-  if (!errors.isEmpty()) {
-    const error = new Error("Validation failed.");
-    error.statusCode = 422;
-    error.data = errors.array();
-    throw error;
-  }
-  
-  const email = req.body.email;
-  const password = req.body.password;
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed.");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const email = req.body.email;
+    const password = req.body.password;
 
     const existingUser = await User.findOne({ email: email });
     if (!existingUser) {
@@ -164,7 +116,7 @@ export async function loginUser(req, res, next) {
         email: existingUser.email,
         userId: existingUser._id.toString(),
         isAdmin: existingUser.isAdmin,
-        role: existingUser.role
+        role: existingUser.role,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "3h" }
@@ -175,9 +127,24 @@ export async function loginUser(req, res, next) {
       userId: existingUser._id.toString(),
       role: existingUser.role,
       isAdmin: existingUser.isAdmin,
-      expiresIn: 3600*3,
+      expiresIn: 3600 * 3,
     });
   } catch (err) {
     next(err);
   }
 }
+
+export const googleAuth = (req, res) => {
+  res.redirect("/");
+};
+
+export const googleAuthCallback = (req, res) => {
+  // User will be redirected here after successful authentication
+  const { token, user, expiresIn } = req.user;
+  // console.log(req)
+
+  // res.json({ token, user });
+  res.redirect(
+    `${process.env.FRONTEND_URL}/auth/google/callback?token=${token}&userId=${user._id}&role=${user.role}&isAdmin=${user.isAdmin}&expiresIn=${expiresIn}`
+  );
+};

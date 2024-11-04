@@ -7,24 +7,30 @@ import { DateTime } from "luxon";
 
 export const viewReferral = async (req, res, next) => {
   try {
-    const referral = await ReferralCode.findOne({ generatedBy: req.userId }).populate("generatedBy", "name email");
-    const userInteractions = await userInteraction.find({ _id:referral.userInteractions}).populate('userId', 'name email');
-  
 
-    if (!referral ) {
+    const referral = await ReferralCode.findOne({
+      generatedBy: req.userId,
+    }).populate("generatedBy", "name email");
+
+    if (!referral) {
       const error = new Error("No referrals found");
       error.statusCode = 404;
       throw error;
     }
+    const userInteractions = await userInteraction
+      .find({ _id: referral.userInteractions })
+      .populate("userId", "name email");
 
-    const formattedReferral ={
+    
+
+    const formattedReferral = {
       _id: referral._id,
       code: referral.code,
       generatedBy: referral.generatedBy,
       status: referral.status,
       userInterations: userInteractions,
       // policy: referral.policy,
-      // usedBy: referral.usedBy,
+      usedBy: referral.usedBy,
       usageCount: referral.usageCount,
       // expirationDateUTC: referral.expirationDate,
       // expirationDateIST: DateTime.fromISO(referral.expirationDate)
@@ -40,12 +46,10 @@ export const viewReferral = async (req, res, next) => {
   }
 };
 
-export const generateReferralCode = async (req, res, next) => 
-  
-  {
+export const generateReferralCode = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const now = DateTime.now().toUTC().toISO();
+    // const now = DateTime.now().toUTC().toISO();
     const user = await User.findById(userId);
 
     // const policy = await ReferralPolicy.findOne({
@@ -60,7 +64,6 @@ export const generateReferralCode = async (req, res, next) =>
     //   throw error;
     // }
 
-
     // const expirationDate = DateTime.now()
     //   .plus({ days: policy.validityPeriod })
     //   .toUTC()
@@ -68,29 +71,35 @@ export const generateReferralCode = async (req, res, next) =>
     // const expirationIST = DateTime.fromISO(expirationDate)
     //   .setZone("Asia/Kolkata")
     //   .toISO();
-    let finalReferral;
-      const existingReferral =await ReferralCode.findOne({ generatedBy: userId });
+    // let finalReferral;
+    const existingReferral = await ReferralCode.findOne({
+      generatedBy: userId,
+    });
     if (existingReferral) {
-    //   existingReferral.code = referralCode;
-    // finalReferral=  await existingReferral.save();
+      //   existingReferral.code = referralCode;
+      // finalReferral=  await existingReferral.save();
       // console.log(existingReferral);
-    return res.status(201).json({ message:"Referral code already generated",referralCode: existingReferral.code });
+      return res
+        .status(201)
+        .json({
+          message: "Referral code already generated",
+          referralCode: existingReferral.code,
+        });
     }
-    
+
     const referralCode = createReferralCode(user.name);
     console.log(existingReferral);
-   
-  const newReferralCode = new ReferralCode({
+
+    const newReferralCode = new ReferralCode({
       code: referralCode,
       generatedBy: userId,
       // policy: policy._id,
     });
 
     await newReferralCode.save();
-    
-  
-     user.referralCode = newReferralCode.code;
-   await  user.save();
+
+    user.referralCode = newReferralCode.code;
+    await user.save();
 
     return res.status(201).json({ referralCode });
   } catch (error) {
@@ -114,7 +123,7 @@ export const checkReferralCode = async (req, res, next) => {
     //   throw error;
     // }
     const referralCode = await ReferralCode.findOne({
-      code: req.params.code
+      code: req.params.code,
     });
     if (!referralCode) {
       const error = new Error("The referral code has been expired");

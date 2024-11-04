@@ -33,6 +33,8 @@ export const signupValidator = [
   }
   return false
   }),
+  body('referralCode', "Referral code is invalid").trim().escape(),
+  body('role', "Role is invalid").trim().escape().isIn(['user', 'influencer']),
 ];
 
 export const createPolicyValidator = [
@@ -75,3 +77,8 @@ export const userIdValidator = [
     return mongoose.isValidObjectId(value);
   }),
 ];
+
+export const googleUserInfoValidator= [
+  body('role', "Role is invalid").trim().escape(),
+  body('referredByCode', "Name is invalid").trim().escape(),
+]

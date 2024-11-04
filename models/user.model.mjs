@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
   phoneNumber:{type:String,  unique: true},
   googleId: {type:String},
   username: {type:String},
-  thumbnail:{type: String},
   password: { type: String },
   referralCode: { type: String},  
   referredBy: { type: String }, 
