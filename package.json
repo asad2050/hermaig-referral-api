@@ -4,6 +4,9 @@
   "description": "Rest Api for Hermaig referral frontend",
   "main": "index.mjs",
   "type": "module",
+  "engines": {
+    "node": ">=18.20.4" 
+  },
   "scripts": {
     "start": "nodemon index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
