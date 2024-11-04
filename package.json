@@ -1,12 +1,12 @@
 {
   "name": "hermaig-referral-backend",
   "version": "1.0.0",
+  "engines": {
+    "node": "18.x"  
+  },
   "description": "Rest Api for Hermaig referral frontend",
   "main": "index.mjs",
   "type": "module",
-  "engines": {
-    "node": ">=18.x" 
-  },
   "scripts": {
     "start": "nodemon index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
