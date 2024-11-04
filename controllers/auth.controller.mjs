@@ -145,6 +145,6 @@ export const googleAuthCallback = (req, res) => {
 
   // res.json({ token, user });
   res.redirect(
-    `${process.env.FRONTEND_URL}/auth/google/callback?token=${token}&userId=${user._id}&role=${user.role}&isAdmin=${user.isAdmin}&expiresIn=${expiresIn}`
+    `${process.env.FRONTEND_URL}?token=${token}&userId=${user._id}&role=${user.role}&isAdmin=${user.isAdmin}&expiresIn=${expiresIn}`
   );
 };
