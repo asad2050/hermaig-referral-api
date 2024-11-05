@@ -60,7 +60,7 @@ export const storeUserInteractions = async (req, res, next) => {
       interactionDetails: interactionDetails,
     });
     
-    console.log(newInteraction)
+    // console.log(newInteraction)
     newInteraction.save();
     
     
