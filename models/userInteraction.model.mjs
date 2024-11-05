@@ -17,7 +17,7 @@ const userInteractionSchema = new mongoose.Schema({
   interactionDetails: [{
     url: { type: String },         
     timestamp: { type: Date, default: Date.now() }, 
-    ISTTimestamp: { type: Date,default:Date.now()+5.5*60*60*1000}
+    ISTTimestamp: { type:Date,}
   }],
 });
 

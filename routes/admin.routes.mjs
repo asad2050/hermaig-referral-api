@@ -6,7 +6,7 @@ import {
   // updatePolicy,
   // getAllReferralsUnderThisPolicy,
   getAllReferrals,
-  getUserReferrals,
+  // getUserReferrals,
   getReferralDetails,
 } from "../controllers/admin.controller.mjs";
 import {
@@ -24,7 +24,7 @@ const router = Router();
 // router.get("/policy/:pId/referrals",policyDetailsValidator, getAllReferralsUnderThisPolicy);
 router.get("/referrals", getAllReferrals);
 router.get("/referrals/:rId", referralDetailsValidator, getReferralDetails);
-router.get("/user/:userId/referrals", userIdValidator, getUserReferrals);
+// router.get("/user/:userId/referrals", userIdValidator, getUserReferrals);
 // router.get("/user/:userId/rewards", userIdValidator, getUserRewards);
 
 export default router;

@@ -20,6 +20,10 @@ try{
         error.statuCode = 401;
         throw error;
     }
+    req.userId= decodedToken.userId;
+    req.role= decodedToken.role;
+    req.isAdmin = decodedToken.isAdmin;
+    next();
 
 } catch(err){
     err.statuCode=500;
@@ -27,9 +31,6 @@ try{
 }
 
 
-        req.userId= decodedToken.userId;
-        req.role= decodedToken.role;
-        req.isAdmin = decodedToken.isAdmin;
-        next();
+      
 }
 export default isAuth;

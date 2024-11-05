@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 // import { createReferralCode } from "../util/createReferralCode.mjs";
 import User from "../models/user.model.mjs";
-import userInteraction from "../models/userInteraction.model.mjs";
+import UserInteraction from "../models/userInteraction.model.mjs";
 import ReferralCode from "../models/referral.model.mjs";
 
 export async function signupUser(req, res, next) {
@@ -32,13 +32,21 @@ export async function signupUser(req, res, next) {
       }
     }
 
-    const userAlreadyExists = await User.findOne({
+    const emailAlreadyExists = await User.findOne({
       email: req.body.email,
-      phoneNumber: req.body.phoneNumber,
     });
-    if (userAlreadyExists) {
+    const phoneNumberAlreadyExists= await User.findOne({
+phoneNumber:req.body.phoneNumber    });
+    if (emailAlreadyExists ) {
       const error = new Error(
-        "A user with this email and phone number already exists."
+        "A user with this email already exists."
+      );
+      error.statusCode = 403;
+      throw error;
+    }   
+    if (phoneNumberAlreadyExists) {
+      const error = new Error(
+        "A user with this phone number already exists."
       );
       error.statusCode = 403;
       throw error;
@@ -58,11 +66,12 @@ export async function signupUser(req, res, next) {
     const savedUser = await newUser.save();
 
     // console.log(referralCode)
-    const userInteraction = new userInteraction({
+    const userInteraction = new UserInteraction({
       userId: savedUser._id,
       interactionType: "signup",
       referralCode: referredByUser ? referredByUser.referralCode : null,
     });
+
     if (referralCode) {
       const responseUserInterationSave = await userInteraction.save();
       referralCode.usedBy.push(savedUser._id);

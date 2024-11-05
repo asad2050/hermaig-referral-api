@@ -30,6 +30,8 @@ export const getUserRewards = async (req, res) => {
 };
 
 export const storeUserInteractions = async (req, res, next) => {
+  console.log("Request received at:", new Date().toISOString());
+
   const errors = validationResult(req);
 
   try {
@@ -56,19 +58,20 @@ export const storeUserInteractions = async (req, res, next) => {
       interactionType,
       referralCode: user.referredBy,
       interactionDetails: interactionDetails,
-      timestamp: new Date(), 
     });
-
+    
+    console.log(newInteraction)
+    // newInteraction.save();
     
     
-    const referral = await ReferralCode.findOne({ code: user.referredBy });
-    if (referral) {
-      referral.userInteractions = [
-        ...referral.userInteractions,
-        newInteraction,
-      ];
-      await referral.save();
-    }
+    // const referral = await ReferralCode.findOne({ code: user.referredBy });
+    // if (referral) {
+    //   referral.userInteractions = [
+    //     ...referral.userInteractions,
+    //     newInteraction,
+    //   ];
+    //   await referral.save();
+    // }
 
     
     res.status(201).json({
