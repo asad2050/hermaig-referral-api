@@ -58,8 +58,7 @@ export const userInteractionsValidator = [
   body("interactionType", "The interaction type should be either 'signup' or 'linkClick'").trim().isIn(["signup", 'linkClick',"pageVisit"]),
   body("interactionDetails", "The interaction details cannot be empty").isArray(),
   body("interactionDetails.*.url", "The url cannot be empty").trim().not().isEmpty(),
-  body("interactionDetails.*.timestamp", "The timestamp cannot be empty").trim().not().isEmpty(),
-  body('interactionDetails.*.timestamp',"The timestamp cannot be empty").isDate()
+  body("interactionDetails.*.timestamp", "The timestamp cannot be empty").not().isEmpty(),
 ]
 export const policyDetailsValidator = [
   check("pId", "Invalid object Id pId").custom((value) => {
