@@ -103,7 +103,7 @@ import redisClient from '../util/redisClient.mjs'
 export const viewReferral = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1; // Default to page 1 if not specified
   const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page if not specified
-  const cacheKey = `referral:${req.userId}`; // Unique cache key based on userId
+  const cacheKey = `referral:${req.userId}#${page}`; // Unique cache key based on userId
 
   try {
     // Check Redis cache for the referral data
@@ -279,7 +279,7 @@ export const checkReferralCode = async (req, res, next) => {
     const code = req.params.code;
 
     // Check Redis cache for the referral code
-    const cachedReferralCode = await redisClient.get(`referralCode:${code}`);
+    const cachedReferralCode = await redisClient.get(`check:${code}`);
     if (cachedReferralCode) {
       return res.status(200).json({
         isActive: true,
@@ -299,7 +299,7 @@ export const checkReferralCode = async (req, res, next) => {
 
     // Optionally cache the valid referral code in Redis (if it is not expired)
     // You might want to set a suitable expiration for the cache
-    await redisClient.set(`referralCode:${code}`, JSON.stringify(referralCode), 'EX', 3600); // Cache it for 1 hour
+    await redisClient.set(`check:${code}`, JSON.stringify(referralCode), 'EX', 3600); // Cache it for 1 hour
 
     return res.status(200).json({
       isActive: true,
@@ -309,6 +309,10 @@ export const checkReferralCode = async (req, res, next) => {
       // expirationIST: expirationIST,
     });
   } catch (error) {
-    next(error);
+    res.status(404).json({
+      isActive:false,
+      message:error.message
+    })
+    // next(error);
   }
 };

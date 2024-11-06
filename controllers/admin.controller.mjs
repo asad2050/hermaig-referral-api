@@ -257,7 +257,7 @@ export const getReferralDetails = async (req, res, next) => {
 
   try {
     // Check Redis cache for referral details
-    const cachedReferral = await redisClient.get(`referral:${referralId}`);
+    const cachedReferral = await redisClient.get(`referral:${referralId}#${page}`);
     if (cachedReferral) {
       return res.status(200).json(JSON.parse(cachedReferral)); // Return cached response
     }
@@ -304,7 +304,7 @@ export const getReferralDetails = async (req, res, next) => {
     };
 
     // Cache the referral details in Redis for future requests
-    await redisClient.set(`referral:${referralId}`, JSON.stringify(response), 'EX', 3600); // Cache for 1 hour
+    await redisClient.set(`referral:${referralId}#${page}`, JSON.stringify(response), 'EX', 3600); // Cache for 1 hour
 
     res.status(200).json(response);
   } catch (error) {
