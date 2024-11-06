@@ -30,8 +30,6 @@ export const getUserRewards = async (req, res) => {
 };
 
 export const storeUserInteractions = async (req, res, next) => {
-  console.log("Request received at:", new Date().toISOString());
-
   const errors = validationResult(req);
 
   try {

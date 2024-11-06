@@ -16,7 +16,7 @@ const userInteractionSchema = new mongoose.Schema({
   },
   interactionDetails: [{
     url: { type: String },         
-    timestamp: { type: Date, default: Date.now() }, 
+    timestamp: { type: Date }, 
     ISTTimestamp: { type:Date,}
   }],
 });

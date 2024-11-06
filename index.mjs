@@ -38,7 +38,6 @@ app.use('/api/admin',isAuth, protectRoutes,adminRoutes)
 
 app.use((error, req, res, next) => {
     console.log(error);
-   
       // if (error.code === 11000) {
       //   // Handle duplicate key error
       //   error.message="This email or phoneNumber already exists."

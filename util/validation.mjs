@@ -54,11 +54,12 @@ export const codeValidator = [
 ];
 
 export const userInteractionsValidator = [
-  body("interactionType", "The interaction type cannot be empty").trim().escape().not().isEmpty(),
-  body("interactionType", "The interaction type should be either 'signup' or 'linkClick'").trim().escape().isIn(["signup", 'linkClick',"pageVisit"]),
+  body("interactionType", "The interaction type cannot be empty").trim().not().isEmpty(),
+  body("interactionType", "The interaction type should be either 'signup' or 'linkClick'").trim().isIn(["signup", 'linkClick',"pageVisit"]),
   body("interactionDetails", "The interaction details cannot be empty").isArray(),
-  body("interactionDetails.*.url", "The url cannot be empty").trim().escape().not().isEmpty(),
-  body("interactionDetails.*.timestamp", "The timestamp cannot be empty").trim().escape().not().isEmpty(),  
+  body("interactionDetails.*.url", "The url cannot be empty").trim().not().isEmpty(),
+  body("interactionDetails.*.timestamp", "The timestamp cannot be empty").trim().not().isEmpty(),
+  body('interactionDetails.*.timestamp',"The timestamp cannot be empty").isDate()
 ]
 export const policyDetailsValidator = [
   check("pId", "Invalid object Id pId").custom((value) => {
@@ -81,4 +82,19 @@ export const userIdValidator = [
 export const googleUserInfoValidator= [
   body('role', "Role is invalid").trim().escape(),
   body('referredByCode', "Name is invalid").trim().escape(),
+]
+
+export const forgetPasswordValidator=[
+  body("email", "Invalid: should not be empty").trim().escape().not().isEmpty(),
+  body("email", "Invalid email").isEmail(),
+]
+
+export const resetPasswordValidator=[
+  body("newPassword", "password does not Empty").trim().escape().not().isEmpty(),
+  body("newPassword", "The minimum password length is 6 characters")
+    .trim()
+    .escape()
+    .isLength({
+      min: 6,
+    }),
 ]

@@ -213,7 +213,7 @@ export const generateReferralCode = async (req, res, next) => {
     }
 
     const referralCode = createReferralCode(user.name);
-    console.log(existingReferral);
+    // console.log(existingReferral);
 
     const newReferralCode = new ReferralCode({
       code: referralCode,
