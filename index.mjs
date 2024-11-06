@@ -9,8 +9,8 @@ import authRoutes from './routes/auth.routes.mjs'
 import userRoutes from './routes/user.routes.mjs'
 import referralRoutes from './routes/referral.routes.mjs';
 import adminRoutes from './routes/admin.routes.mjs'
-// import path from 'path';
-// import { fileURLToPath } from 'url';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import passport from 'passport';
 // import './util/passport.mjs'; // Ensure this is loaded
 import helmet from 'helmet';
@@ -19,22 +19,29 @@ import helmet from 'helmet';
 
 const app = express();
 
-// app.use(cors());
-app.use(cors({
-  origin: process.env.FRONTEND_URL
-}));
+app.use(cors());
+// app.use(cors({
+//   origin: ''
+// }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
-app.use(helmet());
+// app.use(helmet());
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-// app.use(express.static(path.join(__dirname, 'public')));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+
 
 app.use("/api/auth",authRoutes);
 app.use("/api/user",isAuth,userRoutes);
 app.use('/api/referral',isAuth,protectRoutes,referralRoutes)
 app.use('/api/admin',isAuth, protectRoutes,adminRoutes)
+
+// app.get('*', (req, res,next) => {
+//   res.sendFile(path.join(__dirname,'build', 'index.html'));
+// }
+// );
 
 app.use((error, req, res, next) => {
     console.log(error);
@@ -48,6 +55,10 @@ app.use((error, req, res, next) => {
     const data = error.data;
     res.status(status).json({ message: message, data: data });
   });
+  app.use(express.static(path.join(__dirname, 'build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
   
   let mongodbUrl ='mongodb://127.0.0.1:27017/hermaig-referral-api'
 
