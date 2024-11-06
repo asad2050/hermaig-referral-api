@@ -12,7 +12,7 @@ import adminRoutes from './routes/admin.routes.mjs'
 // import path from 'path';
 // import { fileURLToPath } from 'url';
 import passport from 'passport';
-import './util/passport.mjs'; // Ensure this is loaded
+// import './util/passport.mjs'; // Ensure this is loaded
 import helmet from 'helmet';
 // import redisClient from './redisClient.js';
 

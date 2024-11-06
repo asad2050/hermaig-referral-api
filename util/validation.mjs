@@ -55,7 +55,7 @@ export const codeValidator = [
 
 export const userInteractionsValidator = [
   body("interactionType", "The interaction type cannot be empty").trim().escape().not().isEmpty(),
-  body("interactionType", "The interaction type should be either 'signup' or 'login'").trim().escape().isIn(["signup", 'linkClick',"pageVisit"]),
+  body("interactionType", "The interaction type should be either 'signup' or 'linkClick'").trim().escape().isIn(["signup", 'linkClick',"pageVisit"]),
   body("interactionDetails", "The interaction details cannot be empty").isArray(),
   body("interactionDetails.*.url", "The url cannot be empty").trim().escape().not().isEmpty(),
   body("interactionDetails.*.timestamp", "The timestamp cannot be empty").trim().escape().not().isEmpty(),  

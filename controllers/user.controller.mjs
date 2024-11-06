@@ -61,22 +61,24 @@ export const storeUserInteractions = async (req, res, next) => {
     });
     
     // console.log(newInteraction)
-    newInteraction.save();
+    const savedInteraction = await newInteraction.save();
     
     
     const referral = await ReferralCode.findOne({ code: user.referredBy });
     if (referral) {
-      referral.userInteractions = [
-        ...referral.userInteractions,
-        newInteraction,
-      ];
+      // referral.userInteractions = [
+      //   ...referral.userInteractions,
+      //   newInteraction,
+      // ];
+      referral.userInteractions.push(savedInteraction._id);
+      // console.log(referral)
       await referral.save();
     }
 
     
     res.status(201).json({
       message: "User interaction stored successfully.",
-      interaction: newInteraction,
+      interaction: savedInteraction,
     });
   } catch (error) {
     
@@ -84,54 +86,54 @@ export const storeUserInteractions = async (req, res, next) => {
     res.status(500).json({ error: "Failed to store user interaction." });
   }
 };
-export const storeGoogleUserInformation = async (req, res, next) => {
-  try {
-    let referredByUser = null;
-    let referralCode = null;
-   let role = req.body.role;
-    if (req.body.referredByCode) {
-      referralCode = await ReferralCode.findOne({
-        code: req.body.referredByCode,
-      });
-      if (!referralCode) {
-        errorData.push("Referral code is invalid.");
-      }
-      referredByUser = await User.findById(referralCode.generatedBy);
-      if (!referredByUser) {
-        errorData.push("Referrer doesn't exist.");
-      }
-    }
-    const userId = req.userId;
+// export const storeGoogleUserInformation = async (req, res, next) => {
+//   try {
+//     let referredByUser = null;
+//     let referralCode = null;
+//    let role = req.body.role;
+//     if (req.body.referredByCode) {
+//       referralCode = await ReferralCode.findOne({
+//         code: req.body.referredByCode,
+//       });
+//       if (!referralCode) {
+//         errorData.push("Referral code is invalid.");
+//       }
+//       referredByUser = await User.findById(referralCode.generatedBy);
+//       if (!referredByUser) {
+//         errorData.push("Referrer doesn't exist.");
+//       }
+//     }
+//     const userId = req.userId;
     
-    if (role !== "user" && role !== "influencer") {
-      role='user';
-    }
-    const savedUser = await User.findByIdAndUpdate(
-      userId,
-      { role, referredBy: referralCode.code || ''},
-      { new: true }
-    );
-    const userInteraction = new UserInteraction({
-      userId: savedUser._id,
-      interactionType: "signup",
-      referralCode: referralCode.code ||'',
-    });
-    // console.log(savedUser)
-    // console.log(userInteraction)
-    // console.log(referralCode)
-    if (referralCode) {
-      const responseUserInterationSave = await userInteraction.save();
-      referralCode.usedBy.push(savedUser._id);
-      referralCode.userInteractions.push(responseUserInterationSave._id);
-      referralCode.usageCount += 1;
-      await referralCode.save();
-      referredByUser.rewardPoints += 10;
-      await referredByUser.save();
-    }
-    res.status(201).json({ message: "role updated", userId: savedUser._id });
-  } catch (error) {
+//     if (role !== "user" && role !== "influencer") {
+//       role='user';
+//     }
+//     const savedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { role, referredBy: referralCode.code || ''},
+//       { new: true }
+//     );
+//     const userInteraction = new UserInteraction({
+//       userId: savedUser._id,
+//       interactionType: "signup",
+//       referralCode: referralCode.code ||'',
+//     });
+//     // console.log(savedUser)
+//     // console.log(userInteraction)
+//     // console.log(referralCode)
+//     if (referralCode) {
+//       const responseUserInterationSave = await userInteraction.save();
+//       referralCode.usedBy.push(savedUser._id);
+//       referralCode.userInteractions.push(responseUserInterationSave._id);
+//       referralCode.usageCount += 1;
+//       await referralCode.save();
+//       referredByUser.rewardPoints += 10;
+//       await referredByUser.save();
+//     }
+//     res.status(201).json({ message: "role updated", userId: savedUser._id });
+//   } catch (error) {
     
-    console.error("Error storing user interaction:", error);
-    res.status(500).json({ error: "Failed to store role and referredBy code" });
-  }
-};
+//     console.error("Error storing user interaction:", error);
+//     res.status(500).json({ error: "Failed to store role and referredBy code" });
+//   }
+// };

@@ -59,17 +59,19 @@ phoneNumber:req.body.phoneNumber    });
       phoneNumber: req.body.phoneNumber,
       role: req.body.role,
       password: hashedPw,
-      referredBy: referredByUser ? referredByUser.referralCode : null,
+      referredBy: referredByUser ? referredByUser.referralCode : '',
       rewardPoints: 0,
     });
-
+    // console.log(newUser)
     const savedUser = await newUser.save();
 
     // console.log(referralCode)
+    // console.log(referredByUser)
+
     const userInteraction = new UserInteraction({
       userId: savedUser._id,
       interactionType: "signup",
-      referralCode: referredByUser ? referredByUser.referralCode : null,
+      referralCode: referredByUser ? referredByUser.referralCode :'',
     });
 
     if (referralCode) {
@@ -81,10 +83,17 @@ phoneNumber:req.body.phoneNumber    });
       referredByUser.rewardPoints += 10;
       await referredByUser.save();
     }
+    // console.log(savedUser)
+    // console.log(userInteraction)
+    // console.log(referralCode)
+    // console.log(referredByUser)
     const responseError = errorData ?? errorData.length > 0 ? errorData : null;
     res
       .status(201)
       .json({ message: "User created!", userId: savedUser._id, responseError });
+    // res.status(201).json({
+    //   message:"Success"
+    // })
   } catch (err) {
     next(err);
   }
@@ -143,17 +152,17 @@ export async function loginUser(req, res, next) {
   }
 }
 
-export const googleAuth = (req, res) => {
-  res.redirect("/");
-};
+// export const googleAuth = (req, res) => {
+//   res.redirect("/");
+// };
 
-export const googleAuthCallback = (req, res) => {
-  // User will be redirected here after successful authentication
-  const { token, user, expiresIn } = req.user;
-  // console.log(req)
+// export const googleAuthCallback = (req, res) => {
+//   // User will be redirected here after successful authentication
+//   const { token, user, expiresIn } = req.user;
+//   // console.log(req)
 
-  // res.json({ token, user });
-  res.redirect(
-    `${process.env.FRONTEND_URL}?token=${token}&userId=${user._id}&role=${user.role}&isAdmin=${user.isAdmin}&expiresIn=${expiresIn}`
-  );
-};
+//   // res.json({ token, user });
+//   res.redirect(
+//     `${process.env.FRONTEND_URL}/google/callback?token=${token}&userId=${user._id}&role=${user.role}&isAdmin=${user.isAdmin}&expiresIn=${expiresIn}`
+//   );
+// };
