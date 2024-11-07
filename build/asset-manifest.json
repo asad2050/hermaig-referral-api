@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.d622cc01.css",
-    "main.js": "/static/js/main.1c963f32.js",
+    "main.css": "/static/css/main.9c4b5558.css",
+    "main.js": "/static/js/main.9593951d.js",
     "static/js/453.05709057.chunk.js": "/static/js/453.05709057.chunk.js",
     "static/media/Necklace.png": "/static/media/Necklace.f7a3f5c1dd4e215a9d20.png",
     "static/media/instagram-logo.jpg": "/static/media/instagram-logo.d3887a02fb34119a77a2.jpg",
     "static/media/hermaig-icon.png": "/static/media/hermaig-icon.627070866899bc49be0d.png",
     "static/media/linked-in.png": "/static/media/linked-in.141901ac915f1abfbc72.png",
     "index.html": "/index.html",
-    "main.d622cc01.css.map": "/static/css/main.d622cc01.css.map",
-    "main.1c963f32.js.map": "/static/js/main.1c963f32.js.map",
+    "main.9c4b5558.css.map": "/static/css/main.9c4b5558.css.map",
+    "main.9593951d.js.map": "/static/js/main.9593951d.js.map",
     "453.05709057.chunk.js.map": "/static/js/453.05709057.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d622cc01.css",
-    "static/js/main.1c963f32.js"
+    "static/css/main.9c4b5558.css",
+    "static/js/main.9593951d.js"
   ]
 }

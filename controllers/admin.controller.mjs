@@ -266,7 +266,7 @@ export const getReferralDetails = async (req, res, next) => {
       "generatedBy",
       "name email"
     );
-
+    // console.log(referral.usedBy)
     if (!referral) {
       const error = new Error("Referral not found");
       error.statusCode = 404;
@@ -508,6 +508,48 @@ export const getAllReferrals = async (req, res, next) => {
 
 
 
+
+// paginnation get all users later
+
+// export const getAllUsersForThisReferral = async (req, res, next) => {
+//   const page = parseInt(req.query.page) || 1; // Default to page 1
+//   const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+//   const skip = (page - 1) * limit; // Calculate how many items to skip
+
+//   try {
+//     // Total count of users referred by the given code
+//     const totalUsers = await User.countDocuments({ referredByCode: req.params.code });
+
+//     // Fetch users based on referral code, excluding password field
+//     const users = await User.find({ referredByCode: req.params.code }, { password: -1 })
+//       .skip(skip)
+//       .limit(limit);
+
+//     // Check if no users were found
+//     if (users.length === 0) {
+//       return res.status(404).json({ message: 'No users found for this referral code.' });
+//     }
+
+//     // Format the user data for response
+//     const formattedUsers = users.map((user) => ({
+//       _id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       createdAt: user.createdAt,
+//       updatedAt: user.updatedAt,
+//     }));
+
+//     // Respond with the users and pagination details
+//     res.status(200).json({
+//       users: formattedUsers,
+//       totalUsers, // Include total users count for pagination
+//       totalPages: Math.ceil(totalUsers / limit), // Calculate total pages
+//       currentPage: page, // Current page number
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 
 

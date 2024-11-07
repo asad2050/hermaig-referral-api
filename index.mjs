@@ -14,8 +14,16 @@ import { fileURLToPath } from 'url';
 import passport from 'passport';
 // import './util/passport.mjs'; // Ensure this is loaded
 import helmet from 'helmet';
-// import redisClient from './redisClient.js';
+import redisClient from './util/redisClient.mjs';
 
+const flushCacheBeforeStart = async () => {
+  try {
+    const response = await redisClient.flushAll(); // flushAll returns a promise in Redis 4.x
+    return response;
+  } catch (error) {
+    next(error)
+  }
+};
 
 const app = express();
 
@@ -69,8 +77,21 @@ app.get('*', (req, res) => {
   if(process.env.PORT){
     PORT = process.env.PORT;
   }
-  mongoose.connect(mongodbUrl).then(function(){
-      app.listen(PORT);
-  }).catch(err => {
+  // mongoose.connect(mongodbUrl).then(function(){
+  //     app.listen(PORT);
+  // }).catch(err => {
+  //     console.log(err);
+  //   });
+  flushCacheBeforeStart()
+  .then(() => {
+    mongoose.connect(mongodbUrl).then(() => {
+      app.listen(PORT, () => {
+        console.log(`App is running on port ${PORT}`);
+      });
+    }).catch(err => {
       console.log(err);
     });
+  })
+  .catch((error) => {
+    console.error('Error flushing cache before start:', error);
+  });

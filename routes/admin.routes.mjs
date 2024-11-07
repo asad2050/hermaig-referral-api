@@ -8,10 +8,11 @@ import {
   getAllReferrals,
   // getUserReferrals,
   getReferralDetails,
+  // getAllUsersForThisReferral
 } from "../controllers/admin.controller.mjs";
 import {
   referralDetailsValidator,
-  userIdValidator,
+  // userIdValidator,
   // policyDetailsValidator,
   // createPolicyValidator,
   // updatePolicyValidator,
@@ -24,6 +25,7 @@ const router = Router();
 // router.get("/policy/:pId/referrals",policyDetailsValidator, getAllReferralsUnderThisPolicy);
 router.get("/referrals", getAllReferrals);
 router.get("/referrals/:rId", referralDetailsValidator, getReferralDetails);
+// router.get('/referrals/:code/users', getAllUsersForThisReferral);
 // router.get("/user/:userId/referrals", userIdValidator, getUserReferrals);
 // router.get("/user/:userId/rewards", userIdValidator, getUserRewards);
 

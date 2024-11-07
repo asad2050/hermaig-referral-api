@@ -4,6 +4,7 @@ import {
   checkReferralCode,
   viewReferral,
 } from "../controllers/referral.controller.mjs";
+// import { getAllUsersForThisReferral } from "../controllers/admin.controller.mjs";
 import { getUserRewards } from "../controllers/user.controller.mjs";
 import { codeValidator } from "../util/validation.mjs";
 
@@ -13,5 +14,6 @@ router.get("/", viewReferral);
 router.get("/generate", generateReferralCode);
 router.get("/check/:code",codeValidator ,checkReferralCode);
 router.get('/rewards', getUserRewards);
+// router.get('/users/:code', getAllUsersForThisReferral);
 
 export default router;
